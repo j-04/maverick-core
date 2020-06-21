@@ -4,25 +4,21 @@ import com.custom.ioc.di.core.annotation.Lazy;
 import com.custom.ioc.di.core.annotation.Singleton;
 import com.custom.ioc.di.core.config.Config;
 import com.custom.ioc.di.core.config.JavaConfig;
-import com.custom.ioc.di.core.factory.ObjectFactory;
 import lombok.Getter;
 
 import java.lang.reflect.Modifier;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext {
     @Getter
-    private final Config coreConfig;
-    @Getter
-    private final Config customConfig;
+    private final List<Config> configs = new ArrayList<>();
     private ObjectFactory objectFactory;
-    private final Map<Class, Object> singletonCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
 
     public ApplicationContext(Config customConfig) {
-        this.customConfig = customConfig;
-        this.coreConfig = new JavaConfig("com.custom.ioc.di.core");
+        configs.add(new JavaConfig("com.custom.ioc.di.core"));
+        configs.add(customConfig);
         initContext();
     }
 
@@ -30,10 +26,18 @@ public class ApplicationContext {
         Class<? extends T> implClass = type;
 
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-            implClass = coreConfig.getImplementation(type);
+            for (Config config : configs) {
+                implClass = config.getImplementation(type);
+                if (implClass != null)
+                    break;
+            }
 
-            if (implClass == null)
-                implClass = customConfig.getImplementation(type);
+            implClass = configs.stream().map(config -> {
+                Class<? extends T> impl = config.getImplementation(type);
+                return impl;
+            }).filter(Objects::nonNull).findFirst().orElse(null);
+
+            Objects.requireNonNull(implClass, "Can not find implementation of interface " + type);
         }
 
         T object = objectFactory.createObject(implClass);
@@ -47,8 +51,7 @@ public class ApplicationContext {
 
     private void initContext() {
         objectFactory = new ObjectFactory(this);
-        initEagerSingletons(coreConfig);
-        initEagerSingletons(customConfig);
+        configs.forEach(this::initEagerSingletons);
     }
 
     private void initEagerSingletons(Config config) {
