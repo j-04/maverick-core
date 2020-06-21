@@ -1,5 +1,6 @@
 package com.custom.ioc.di.core.configurator;
 
+import com.custom.ioc.di.core.annotation.RequiredConfigurator;
 import com.custom.ioc.di.core.annotation.InjectProperty;
 import com.custom.ioc.di.core.context.ApplicationContext;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RequiredConfigurator
 public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigurator {
     private final Map<String, String> properties;
 

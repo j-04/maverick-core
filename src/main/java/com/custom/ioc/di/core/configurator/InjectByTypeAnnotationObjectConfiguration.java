@@ -1,10 +1,12 @@
 package com.custom.ioc.di.core.configurator;
 
+import com.custom.ioc.di.core.annotation.RequiredConfigurator;
 import com.custom.ioc.di.core.annotation.InjectByType;
 import com.custom.ioc.di.core.context.ApplicationContext;
 
 import java.lang.reflect.Field;
 
+@RequiredConfigurator
 public class InjectByTypeAnnotationObjectConfiguration implements ObjectConfigurator {
     @Override
     public void configure(Object o, ApplicationContext context) {
