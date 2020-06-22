@@ -26,8 +26,11 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
             e.printStackTrace();
         }
         if (lines != null)
-            this.properties = lines.map(line -> line.split("=| += +|= +| +="))
-                    .collect(Collectors.toMap(arr-> arr[0], arr -> arr[1]));
+            this.properties = lines
+                    .map(String::trim)
+                    .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!]*)$"))
+                    .map(line -> line.split(" *= *"))
+                    .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
         else
             this.properties = Collections.emptyMap();
     }
