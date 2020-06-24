@@ -11,14 +11,31 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext {
-    @Getter
-    private final List<Config> configs = new ArrayList<>();
     private ObjectFactory objectFactory;
-    private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
+    @Getter
+    private final List<Config> configs;
+    private static final List<String> CORE_PACKAGES;
+    private final Map<Class<?>, Object> SINGLETON_CACHE = new ConcurrentHashMap<>();
 
-    public ApplicationContext(Config customConfig) {
-        configs.add(new JavaConfig("com.custom.ioc.di.core"));
-        configs.add(customConfig);
+    static {
+        CORE_PACKAGES = List.of(
+                "com.custom.ioc.di.core"
+        );
+    }
+
+    public ApplicationContext(List<Config> customConfigs) {
+        final Config CORE_CONFIG = new JavaConfig(CORE_PACKAGES);
+        List<Config> allConfigs = new ArrayList<>(customConfigs);
+        allConfigs.add(CORE_CONFIG);
+        this.configs = allConfigs;
+        initContext();
+    }
+
+    public ApplicationContext(String[] packagesToScan) {
+        List<String> packagesList = new ArrayList<>(Arrays.asList(packagesToScan));
+        packagesList.addAll(CORE_PACKAGES);
+        Config config = new JavaConfig(packagesList);
+        this.configs = List.of(config);
         initContext();
     }
 
@@ -42,10 +59,10 @@ public class ApplicationContext {
 
         T object = objectFactory.createObject(implClass);
 
-        if (singletonCache.containsKey(implClass))
-            return (T) singletonCache.get(implClass);
+        if (SINGLETON_CACHE.containsKey(implClass))
+            return (T) SINGLETON_CACHE.get(implClass);
         else
-            singletonCache.put(implClass, object);
+            SINGLETON_CACHE.put(implClass, object);
         return object;
     }
 
@@ -60,7 +77,7 @@ public class ApplicationContext {
             if (!type.isInterface() && !type.isAnnotation() && !Modifier.isAbstract(type.getModifiers())) {
                 if (!type.isAnnotationPresent(Lazy.class)) {
                     Object object = objectFactory.createObject(type);
-                    singletonCache.put(type, object);
+                    SINGLETON_CACHE.put(type, object);
                 }
             }
         }

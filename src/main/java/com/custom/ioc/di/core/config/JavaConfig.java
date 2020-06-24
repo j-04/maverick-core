@@ -2,15 +2,27 @@ package com.custom.ioc.di.core.config;
 
 import lombok.Getter;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
+import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 public class JavaConfig implements Config {
     @Getter
     private final Reflections scanner;
 
-    public JavaConfig(String packageToScan) {
-        this.scanner = new Reflections(packageToScan);
+    public JavaConfig(List<String> packagesToScan) {
+        Collection<URL> urls = packagesToScan.stream()
+                .map(pkg -> ClasspathHelper.forPackage(pkg))
+                .findFirst()
+                .orElse(Collections.emptyList());
+        ConfigurationBuilder cb = new ConfigurationBuilder()
+                .setUrls(urls);
+        this.scanner = new Reflections(cb);
     }
 
     @Override
