@@ -54,15 +54,6 @@
                     <target>14</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <mainClass>com.custom.ioc.di.core.Main</mainClass>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,7 +22,9 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
     public InjectPropertyAnnotationObjectConfigurator() {
         Stream<String> lines = null;
         try {
-            lines = new BufferedReader(new FileReader(ClassLoader.getSystemClassLoader().getResource("application.properties").getPath())).lines();
+            lines = new BufferedReader(new FileReader(
+                    Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("application.properties"), "Can not find application.properties file. Please define the file in resource package!").getPath()
+            )).lines();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -49,12 +52,12 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
                     propertyName = value;
                 }
                 property = properties.get(propertyName);
-                determineFieldType(o, field, propertyName, property);
+                determineFieldType(o, field, property);
             }
         }
     }
 
-    private void determineFieldType(Object object, Field field, String propertyName, String property) {
+    private void determineFieldType(Object object, Field field, String property) {
         Class<?> fieldType = field.getType();
         if (fieldType.equals(Number.class) ||
             fieldType.equals(Byte.class) ||
