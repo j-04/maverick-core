@@ -1,4 +1,4 @@
-package com.custom.ioc.di.core.annotation;
+package com.maverick.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

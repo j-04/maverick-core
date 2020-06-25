@@ -1,9 +1,9 @@
-package com.custom.ioc.di.core.context;
+package com.maverick.core.context;
 
-import com.custom.ioc.di.core.annotation.Lazy;
-import com.custom.ioc.di.core.annotation.Singleton;
-import com.custom.ioc.di.core.config.Config;
-import com.custom.ioc.di.core.config.JavaConfig;
+import com.maverick.core.annotation.Lazy;
+import com.maverick.core.annotation.Singleton;
+import com.maverick.core.config.Config;
+import com.maverick.core.config.JavaConfig;
 import lombok.Getter;
 
 import java.lang.reflect.Modifier;
@@ -19,7 +19,7 @@ public class ApplicationContext {
 
     static {
         CORE_PACKAGES = List.of(
-                "com.custom.ioc.di.core"
+                "com.maverick.core"
         );
     }
 

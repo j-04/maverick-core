@@ -1,4 +1,4 @@
-package com.custom.ioc.di.core.config;
+package com.maverick.core.config;
 
 import lombok.Getter;
 import org.reflections.Reflections;

@@ -1,9 +1,9 @@
-package com.custom.ioc.di.core.context;
+package com.maverick.core.context;
 
-import com.custom.ioc.di.core.annotation.RequiredConfigurator;
-import com.custom.ioc.di.core.config.Config;
-import com.custom.ioc.di.core.configurator.ObjectConfigurator;
-import com.custom.ioc.di.core.configurator.ProxyObjectConfigurator;
+import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.config.Config;
+import com.maverick.core.configurator.ObjectConfigurator;
+import com.maverick.core.configurator.ProxyObjectConfigurator;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;

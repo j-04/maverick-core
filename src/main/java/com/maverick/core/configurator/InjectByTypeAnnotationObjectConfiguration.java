@@ -1,8 +1,8 @@
-package com.custom.ioc.di.core.configurator;
+package com.maverick.core.configurator;
 
-import com.custom.ioc.di.core.annotation.RequiredConfigurator;
-import com.custom.ioc.di.core.annotation.InjectByType;
-import com.custom.ioc.di.core.context.ApplicationContext;
+import com.maverick.core.annotation.InjectByType;
+import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.context.ApplicationContext;
 
 import java.lang.reflect.Field;
 

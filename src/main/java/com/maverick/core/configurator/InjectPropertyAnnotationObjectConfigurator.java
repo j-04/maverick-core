@@ -1,8 +1,8 @@
-package com.custom.ioc.di.core.configurator;
+package com.maverick.core.configurator;
 
-import com.custom.ioc.di.core.annotation.RequiredConfigurator;
-import com.custom.ioc.di.core.annotation.InjectProperty;
-import com.custom.ioc.di.core.context.ApplicationContext;
+import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.annotation.InjectProperty;
+import com.maverick.core.context.ApplicationContext;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
