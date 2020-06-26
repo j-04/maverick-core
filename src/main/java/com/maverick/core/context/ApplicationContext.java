@@ -66,8 +66,9 @@ public class ApplicationContext {
         return object;
     }
 
-    private void initContext() {
+    public void initContext() {
         objectFactory = new ObjectFactory(this);
+        objectFactory.initObjectFactory();
         configs.forEach(this::initEagerSingletons);
     }
 

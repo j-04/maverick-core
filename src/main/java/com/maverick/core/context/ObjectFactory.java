@@ -22,6 +22,9 @@ class ObjectFactory {
     public ObjectFactory(ApplicationContext context) {
         this.context = context;
         this.configs = context.getConfigs();
+    }
+
+    public void initObjectFactory() {
         loadObjectConfigurators();
         loadProxyObjectConfigurators();
     }
@@ -39,7 +42,7 @@ class ObjectFactory {
                 }
             });
             implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                configurators.add(context.getObject(ObjectConfigurator.class));
+                configurators.add(context.getObject(impl));
             });
         }
     }
