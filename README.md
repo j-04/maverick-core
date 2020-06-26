@@ -4,6 +4,7 @@
 * Dragosh Sergey - [j-04](https://github.com/j-04)
 dragoshs.j@yahoo.com
 
+---
 ## Additional modules
 #### [Maverick core API module](https://github.com/j-04/maverick-core-api)
 
@@ -28,6 +29,7 @@ Singleton objects without any implementation of the singleton pattern
 * ***Eager and lazy initialization of singleton objects***
 * ***Proxy pattern***
 
+---
 ## How to install
 **Terminal:**
 ```
