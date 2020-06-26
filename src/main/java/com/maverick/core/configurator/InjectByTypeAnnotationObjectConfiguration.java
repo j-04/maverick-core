@@ -2,14 +2,15 @@ package com.maverick.core.configurator;
 
 import com.maverick.core.annotation.InjectByType;
 import com.maverick.core.annotation.RequiredConfigurator;
-import com.maverick.core.context.ApplicationContext;
+import com.maverick.core.api.configurator.ObjectConfigurator;
+import com.maverick.core.api.context.IApplicationContext;
 
 import java.lang.reflect.Field;
 
 @RequiredConfigurator
 public class InjectByTypeAnnotationObjectConfiguration implements ObjectConfigurator {
     @Override
-    public void configure(Object o, ApplicationContext context) {
+    public void configure(Object o, IApplicationContext context) {
         for (Field declaredField : o.getClass().getDeclaredFields()) {
             if (declaredField.isAnnotationPresent(InjectByType.class)) {
                 Class<?> value = declaredField.getAnnotation(InjectByType.class).value();

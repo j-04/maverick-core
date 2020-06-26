@@ -4,13 +4,14 @@ import com.maverick.core.annotation.Lazy;
 import com.maverick.core.annotation.Singleton;
 import com.maverick.core.config.Config;
 import com.maverick.core.config.JavaConfig;
+import com.maverick.core.api.context.IApplicationContext;
 import lombok.Getter;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ApplicationContext {
+public class ApplicationContext implements IApplicationContext {
     private ObjectFactory objectFactory;
     @Getter
     private final List<Config> configs;
@@ -31,7 +32,7 @@ public class ApplicationContext {
         initContext();
     }
 
-    public ApplicationContext(String[] packagesToScan) {
+    public ApplicationContext(String... packagesToScan) {
         List<String> packagesList = new ArrayList<>(Arrays.asList(packagesToScan));
         packagesList.addAll(CORE_PACKAGES);
         Config config = new JavaConfig(packagesList);

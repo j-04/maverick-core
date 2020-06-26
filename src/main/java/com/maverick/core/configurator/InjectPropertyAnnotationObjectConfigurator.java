@@ -1,17 +1,18 @@
 package com.maverick.core.configurator;
 
-import com.maverick.core.annotation.RequiredConfigurator;
 import com.maverick.core.annotation.InjectProperty;
-import com.maverick.core.context.ApplicationContext;
+import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.api.configurator.ObjectConfigurator;
+import com.maverick.core.api.context.IApplicationContext;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,26 +21,33 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
     private final Map<String, String> properties;
 
     public InjectPropertyAnnotationObjectConfigurator() {
+        URL url = ClassLoader.getSystemClassLoader().getResource("application.properties");
+        String path = null;
+        if (url != null)
+            path = url.getPath();
+
         Stream<String> lines = null;
-        try {
-            lines = new BufferedReader(new FileReader(
-                    Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("application.properties"), "Can not find application.properties file. Please define the file in resource package!").getPath()
-            )).lines();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (lines != null)
-            this.properties = lines
-                    .map(String::trim)
-                    .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!]*)$"))
-                    .map(line -> line.split(" *= *"))
-                    .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
-        else
+        if (path != null) {
+            try {
+                lines = new BufferedReader(new FileReader(path)).lines();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (lines != null)
+                this.properties = lines
+                        .map(String::trim)
+                        .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!]*)$"))
+                        .map(line -> line.split(" *= *"))
+                        .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+            else
+                this.properties = Collections.emptyMap();
+
+        } else
             this.properties = Collections.emptyMap();
     }
 
     @Override
-    public void configure(Object o, ApplicationContext context) {
+    public void configure(Object o, IApplicationContext context) {
         for (Field field : o.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(InjectProperty.class)) {
                 InjectProperty p = field.getAnnotation(InjectProperty.class);

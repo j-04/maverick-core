@@ -11,7 +11,7 @@ public class Application {
         return context;
     }
 
-    public static ApplicationContext run(String[] packagesToScan) {
+    public static ApplicationContext run(String... packagesToScan) {
         ApplicationContext context = new ApplicationContext(packagesToScan);
         context.initContext();
         return context;

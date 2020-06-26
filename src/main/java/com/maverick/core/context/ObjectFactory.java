@@ -1,9 +1,9 @@
 package com.maverick.core.context;
 
 import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.api.configurator.ObjectConfigurator;
+import com.maverick.core.api.configurator.ProxyObjectConfigurator;
 import com.maverick.core.config.Config;
-import com.maverick.core.configurator.ObjectConfigurator;
-import com.maverick.core.configurator.ProxyObjectConfigurator;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
@@ -60,7 +60,7 @@ class ObjectFactory {
                 }
             });
             implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                proxyConfigurators.add(context.getObject(ProxyObjectConfigurator.class));
+                proxyConfigurators.add(context.getObject(impl));
             });
         }
     }
