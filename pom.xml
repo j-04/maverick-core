@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 
-    <groupId>com.custom.ioc.di</groupId>
-    <artifactId>custom-ioc-di-core</artifactId>
+    <groupId>com.maverick.core</groupId>
+    <artifactId>maverick-core</artifactId>
     <version>1.0</version>
 
     <dependencies>
@@ -40,6 +40,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
+        </dependency>
+        <!--   https://github.com/j-04/maverick-core-api ; Dependency from local repo  -->
+        <dependency>
+            <groupId>com.maverick.core.api</groupId>
+            <artifactId>maverick-core-api</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
