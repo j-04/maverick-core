@@ -29,9 +29,18 @@ Singleton objects without any implementation of the singleton pattern
 * ***Proxy pattern***
 
 ## How to install
+**Terminal:**
 ```
 $ git clone https://github.com/j-04/maverick-core.git
 $ cd maverick-core
 $ mvn clean install
 ```
 
+**Maven dependency:**
+```
+<dependency>
+    <groupId>com.maverick.core</groupId>
+    <artifactId>maverick-core</artifactId>
+    <version>1.0</version>
+</dependency>
+```
