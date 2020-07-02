@@ -1,7 +1,7 @@
 package com.maverick.core.configurator;
 
-import com.maverick.core.annotation.InjectByType;
-import com.maverick.core.annotation.CoreConfigurator;
+import com.maverick.core.api.annotation.InjectByType;
+import com.maverick.core.api.annotation.CoreConfigurator;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.context.IApplicationContext;
 
@@ -19,7 +19,7 @@ public class InjectByTypeAnnotationObjectConfiguration implements ObjectConfigur
         while (!oClass.equals(Object.class)) {
             for (Field declaredField : oClass.getDeclaredFields()) {
                 if (declaredField.isAnnotationPresent(InjectByType.class)) {
-                    Class<?> value = declaredField.getAnnotation(InjectByType.class).value();
+                    Class<?> value = declaredField.getAnnotation(InjectByType.class).type();
                     try {
                         if (value.equals(Object.class)) {
                             Class<?> fieldClass = declaredField.getType();

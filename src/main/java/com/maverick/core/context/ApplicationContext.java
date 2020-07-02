@@ -1,7 +1,7 @@
 package com.maverick.core.context;
 
-import com.maverick.core.annotation.Lazy;
-import com.maverick.core.annotation.Singleton;
+import com.maverick.core.api.annotation.Lazy;
+import com.maverick.core.api.annotation.Singleton;
 import com.maverick.core.config.Config;
 import com.maverick.core.config.JavaConfig;
 import com.maverick.core.api.context.IApplicationContext;

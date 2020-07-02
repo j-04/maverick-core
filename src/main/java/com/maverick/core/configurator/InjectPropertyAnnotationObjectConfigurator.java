@@ -1,7 +1,7 @@
 package com.maverick.core.configurator;
 
-import com.maverick.core.annotation.InjectProperty;
-import com.maverick.core.annotation.CoreConfigurator;
+import com.maverick.core.api.annotation.CoreConfigurator;
+import com.maverick.core.api.annotation.InjectProperty;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.context.IApplicationContext;
 import org.apache.commons.lang3.StringUtils;

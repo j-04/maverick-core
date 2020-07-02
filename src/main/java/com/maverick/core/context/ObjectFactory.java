@@ -1,6 +1,6 @@
 package com.maverick.core.context;
 
-import com.maverick.core.annotation.CoreConfigurator;
+import com.maverick.core.api.annotation.CoreConfigurator;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.configurator.ProxyObjectConfigurator;
 import com.maverick.core.config.Config;
