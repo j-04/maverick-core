@@ -24,6 +24,10 @@ public class ApplicationContext implements IApplicationContext {
         );
     }
 
+    public ApplicationContext() {
+        this("");
+    }
+
     public ApplicationContext(List<Config> customConfigs) {
         final Config CORE_CONFIG = new JavaConfig(CORE_PACKAGES);
         List<Config> allConfigs = new ArrayList<>(customConfigs);

@@ -1,7 +1,7 @@
 package com.maverick.core.configurator;
 
 import com.maverick.core.annotation.InjectProperty;
-import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.annotation.CoreConfigurator;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.context.IApplicationContext;
 import org.apache.commons.lang3.StringUtils;
@@ -13,10 +13,11 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RequiredConfigurator
+@CoreConfigurator
 public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigurator {
     private final Map<String, String> properties;
 
@@ -35,7 +36,7 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
             }
             if (lines != null)
                 this.properties = lines
-                        .map(String::trim)
+                        .map(String::strip)
                         .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!]*)$"))
                         .map(line -> line.split(" *= *"))
                         .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
@@ -48,30 +49,33 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
 
     @Override
     public void configure(Object o, IApplicationContext context) {
-        for (Field field : o.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(InjectProperty.class)) {
-                InjectProperty p = field.getAnnotation(InjectProperty.class);
-                String value = p.value();
-                String property;
-                String propertyName;
-                if (value.isEmpty()) {
-                    propertyName = field.getName();
-                } else {
-                    propertyName = value;
+        Objects.requireNonNull(o);
+        Objects.requireNonNull(context);
+
+        Class<?> oClass = o.getClass();
+        while (!oClass.getSuperclass().equals(Object.class)) {
+            for (Field field : oClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(InjectProperty.class)) {
+                    InjectProperty p = field.getAnnotation(InjectProperty.class);
+                    String value = p.value();
+                    String property;
+                    String propertyName;
+                    if (value.isEmpty()) {
+                        propertyName = field.getName();
+                    } else {
+                        propertyName = value;
+                    }
+                    property = properties.get(propertyName);
+                    determineFieldType(o, field, property);
                 }
-                property = properties.get(propertyName);
-                determineFieldType(o, field, property);
             }
+            oClass = oClass.getSuperclass();
         }
     }
 
     private void determineFieldType(Object object, Field field, String property) {
         Class<?> fieldType = field.getType();
-        if (fieldType.equals(Number.class) ||
-            fieldType.equals(Byte.class) ||
-            fieldType.equals(Short.class) ||
-            fieldType.equals(Integer.class) ||
-            fieldType.equals(Long.class)) {
+        if (fieldType.equals(Number.class) || fieldType.getSuperclass().equals(Number.class)) {
             injectNumberPropertyInField(object, field, property);
         }
         if (fieldType.equals(Character.class))
@@ -84,14 +88,14 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
         if (property.length() == 1)
             injectProperty(object, field, property.charAt(0));
         else
-            throwRuntimeExceptions(property, field.getType());
+            throwRuntimeException(property, field.getType());
     }
 
     private void injectNumberPropertyInField(Object object, Field field, String property) {
         if (StringUtils.isNumeric(property))
             injectProperty(object, field, Integer.parseInt(property));
         else
-            throwRuntimeExceptions(property, field.getType());
+            throwRuntimeException(property, field.getType());
     }
 
     private void injectProperty(Object object, Field field, Object property) {
@@ -103,7 +107,7 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
         }
     }
 
-    private void throwRuntimeExceptions(String property, Class<?> fieldType) {
+    private void throwRuntimeException(String property, Class<?> fieldType) {
         throw new RuntimeException(String.format("Can not inject property with value: \"%s\" in field with type: \"%s\"", property, fieldType.getName()));
     }
 }

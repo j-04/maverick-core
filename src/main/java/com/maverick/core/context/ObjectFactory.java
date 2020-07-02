@@ -1,6 +1,6 @@
 package com.maverick.core.context;
 
-import com.maverick.core.annotation.RequiredConfigurator;
+import com.maverick.core.annotation.CoreConfigurator;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.configurator.ProxyObjectConfigurator;
 import com.maverick.core.config.Config;
@@ -30,7 +30,7 @@ class ObjectFactory {
     }
 
     private void loadObjectConfigurators() {
-        final Class<RequiredConfigurator> annotation = RequiredConfigurator.class;
+        final Class<CoreConfigurator> annotation = CoreConfigurator.class;
 
         for (Config config : configs) {
             Set<Class<? extends ObjectConfigurator>> implsSet = config.getScanner().getSubTypesOf(ObjectConfigurator.class);
@@ -48,7 +48,7 @@ class ObjectFactory {
     }
 
     private void loadProxyObjectConfigurators() {
-        final Class<RequiredConfigurator> annotation = RequiredConfigurator.class;
+        final Class<CoreConfigurator> annotation = CoreConfigurator.class;
 
         for (Config config : configs) {
             Set<Class<? extends ProxyObjectConfigurator>> implsSet = config.getScanner().getSubTypesOf(ProxyObjectConfigurator.class);
