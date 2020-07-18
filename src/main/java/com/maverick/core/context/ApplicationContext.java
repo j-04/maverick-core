@@ -15,33 +15,19 @@ public class ApplicationContext implements IApplicationContext {
     private ObjectFactory objectFactory;
     @Getter
     private final List<Config> configs;
-    private static final List<String> CORE_PACKAGES;
     private final Map<Class<?>, Object> SINGLETON_CACHE = new ConcurrentHashMap<>();
-
-    static {
-        CORE_PACKAGES = List.of(
-                "com.maverick.core"
-        );
-    }
+    private final ConfigManager configManager = new ConfigManagerImpl();
 
     public ApplicationContext() {
         this("");
     }
 
     public ApplicationContext(List<Config> customConfigs) {
-        final Config CORE_CONFIG = new JavaConfig(CORE_PACKAGES);
-        List<Config> allConfigs = new ArrayList<>(customConfigs);
-        allConfigs.add(CORE_CONFIG);
-        this.configs = allConfigs;
-        initContext();
+        this.configs = configManager.setUpConfigList(customConfigs);
     }
 
     public ApplicationContext(String... packagesToScan) {
-        List<String> packagesList = new ArrayList<>(Arrays.asList(packagesToScan));
-        packagesList.addAll(CORE_PACKAGES);
-        Config config = new JavaConfig(packagesList);
-        this.configs = List.of(config);
-        initContext();
+        this.configs = configManager.setUpConfigList(packagesToScan);
     }
 
     public <T> T getObject(Class<T> type) {
