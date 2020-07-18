@@ -2,13 +2,15 @@ package com.maverick.core.context;
 
 import com.maverick.core.api.annotation.Lazy;
 import com.maverick.core.api.annotation.Singleton;
-import com.maverick.core.config.Config;
-import com.maverick.core.config.JavaConfig;
 import com.maverick.core.api.context.IApplicationContext;
+import com.maverick.core.config.Config;
 import lombok.Getter;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext implements IApplicationContext {
@@ -16,7 +18,7 @@ public class ApplicationContext implements IApplicationContext {
     @Getter
     private final List<Config> configs;
     private final Map<Class<?>, Object> SINGLETON_CACHE = new ConcurrentHashMap<>();
-    private final ConfigManager configManager = new ConfigManagerImpl();
+    private final ConfigManager configManager = new BaseConfigManager();
 
     public ApplicationContext() {
         this("");
