@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import com.maverick.core.config.Config;
 import com.maverick.core.config.JavaConfig;
 
-class BaseConfigManager implements ConfigManager{
+class BaseConfigManager implements ConfigManager {
     private static final List<String> CORE_PACKAGES;
     static {
         CORE_PACKAGES = List.of(

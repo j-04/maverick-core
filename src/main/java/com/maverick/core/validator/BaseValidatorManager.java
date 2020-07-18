@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BaseValidatorManager implements ValidatorManager  {
+public class BaseValidatorManager implements ValidatorManager {
     private List<Config> configs;
     private final List<ContextValidator> VALIDATORS = new ArrayList<>();
 
