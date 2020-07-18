@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import com.maverick.core.config.Config;
 import com.maverick.core.config.JavaConfig;
 
-class ConfigManagerImpl implements ConfigManager{
+class BaseConfigManager implements ConfigManager{
     private static final List<String> CORE_PACKAGES;
     static {
         CORE_PACKAGES = List.of(
-                "com.maverick.core"
+                "com.maverick.core",
+                "com.maverick.core.validator"
         );
     }
     public List<Config> setUpConfigList(List<Config> configs) {
