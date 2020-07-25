@@ -1,16 +1,16 @@
 package com.maverick.core.context;
 
 import com.maverick.core.api.annotation.Lazy;
+import com.maverick.core.api.annotation.Mob;
 import com.maverick.core.api.annotation.Singleton;
 import com.maverick.core.api.context.IApplicationContext;
 import com.maverick.core.config.Config;
+import com.maverick.core.validator.BaseValidatorManager;
+import com.maverick.core.validator.ValidatorManager;
 import lombok.Getter;
 
 import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext implements IApplicationContext {
@@ -19,6 +19,9 @@ public class ApplicationContext implements IApplicationContext {
     private final List<Config> configs;
     private final Map<Class<?>, Object> SINGLETON_CACHE = new ConcurrentHashMap<>();
     private final ConfigManager configManager = new BaseConfigManager();
+    private ValidatorManager validatorManager;
+
+    private final List<Class<?>> MOB_CLASSES = new ArrayList<>();
 
     public ApplicationContext() {
         this("");
@@ -30,6 +33,30 @@ public class ApplicationContext implements IApplicationContext {
 
     public ApplicationContext(String... packagesToScan) {
         this.configs = configManager.setUpConfigList(packagesToScan);
+    }
+
+    public void initContext() {
+        objectFactory = new ObjectFactory(this);
+        objectFactory.initObjectFactory();
+        configs.forEach(this::initEagerSingletons);
+        validatorManager = new BaseValidatorManager(this);
+        startMobProcessing();
+    }
+
+    private void startMobProcessing() {
+        scanMobObjects();
+        validateMobObjects();
+    }
+
+    private void scanMobObjects() {
+        for (Config config : configs) {
+            Set<Class<?>> typesAnnotatedWith = config.getScanner().getTypesAnnotatedWith(Mob.class);
+            MOB_CLASSES.addAll(new ArrayList<>(typesAnnotatedWith));
+        }
+    }
+
+    private void validateMobObjects() {
+        validatorManager.validate(this, MOB_CLASSES);
     }
 
     public <T> T getObject(Class<T> type) {
@@ -57,12 +84,6 @@ public class ApplicationContext implements IApplicationContext {
         else
             SINGLETON_CACHE.put(implClass, object);
         return object;
-    }
-
-    public void initContext() {
-        objectFactory = new ObjectFactory(this);
-        objectFactory.initObjectFactory();
-        configs.forEach(this::initEagerSingletons);
     }
 
     private void initEagerSingletons(Config config) {

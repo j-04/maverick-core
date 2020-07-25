@@ -5,5 +5,5 @@ import com.maverick.core.context.ApplicationContext;
 import java.util.List;
 
 public interface ValidatorManager {
-    void validate(ApplicationContext context, List<Class<Object>> mobs);
+    void validate(ApplicationContext context, List<Class<?>> mobs);
 }

@@ -14,14 +14,15 @@ public class BaseValidatorManager implements ValidatorManager {
     private List<Config> configs;
     private final List<ContextValidator> VALIDATORS = new ArrayList<>();
 
-    @Override
-    public void validate(ApplicationContext context, List<Class<Object>> mobs) {
+    public BaseValidatorManager(ApplicationContext context) {
         this.configs = context.getConfigs();
-
         scanForValidators();
+    }
 
+    @Override
+    public void validate(ApplicationContext context, List<Class<?>> mobs) {
         for (ContextValidator validator : VALIDATORS) {
-            for (Class<Object> mob : mobs) {
+            for (Class<?> mob : mobs) {
                 validator.validate(mob, mob);
             }
         }
