@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.maverick.core.config.Config;
-import com.maverick.core.config.JavaConfig;
+import com.maverick.core.config.PathScannerConfig;
 
 class BaseConfigManager implements ConfigManager {
     private static final List<String> CORE_PACKAGES;
@@ -16,7 +16,7 @@ class BaseConfigManager implements ConfigManager {
         );
     }
     public List<Config> setUpConfigList(List<Config> configs) {
-        final Config CORE_CONFIG = new JavaConfig(CORE_PACKAGES);
+        final Config CORE_CONFIG = new PathScannerConfig(CORE_PACKAGES);
         List<Config> allConfigs = new ArrayList<>(configs);
         allConfigs.add(CORE_CONFIG);
         return allConfigs;
@@ -25,7 +25,7 @@ class BaseConfigManager implements ConfigManager {
     public List<Config> setUpConfigList(String... packages) {
         List<String> packagesList = new ArrayList<>(Arrays.asList(packages));
         packagesList.addAll(CORE_PACKAGES);
-        Config config = new JavaConfig(packagesList);
+        Config config = new PathScannerConfig(packagesList);
         return List.of(config);
     }
 }

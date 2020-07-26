@@ -8,11 +8,11 @@ import org.reflections.util.ConfigurationBuilder;
 import java.net.URL;
 import java.util.*;
 
-public class JavaConfig implements Config {
+public class PathScannerConfig implements Config {
     @Getter
     private final Reflections scanner;
 
-    public JavaConfig(List<String> packagesToScan) {
+    public PathScannerConfig(List<String> packagesToScan) {
         Collection<URL> urls = new ArrayList<>();
         for (String pkg: packagesToScan) {
             urls.addAll(ClasspathHelper.forPackage(pkg));
