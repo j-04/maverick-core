@@ -1,6 +1,7 @@
 package com.maverick.core.config;
 
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -8,11 +9,11 @@ import org.reflections.util.ConfigurationBuilder;
 import java.net.URL;
 import java.util.*;
 
-public class JavaConfig implements Config {
+public class PathScannerConfig implements Config {
     @Getter
     private final Reflections scanner;
 
-    public JavaConfig(List<String> packagesToScan) {
+    public PathScannerConfig(List<String> packagesToScan) {
         Collection<URL> urls = new ArrayList<>();
         for (String pkg: packagesToScan) {
             urls.addAll(ClasspathHelper.forPackage(pkg));
@@ -23,6 +24,7 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    @Nullable
     public <T> Class<? extends T> getImplementation(Class<T> type) {
         Set<Class<? extends T>> impls = scanner.getSubTypesOf(type);
         if (impls.size() > 1) {
