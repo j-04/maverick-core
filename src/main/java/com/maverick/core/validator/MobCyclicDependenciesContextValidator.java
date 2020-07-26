@@ -1,13 +1,15 @@
 package com.maverick.core.validator;
 
 import com.maverick.core.api.annotation.InjectByType;
+import com.maverick.core.api.annotation.Mob;
 import com.maverick.core.exception.IncorrectMobConfigurationException;
 
 import java.lang.reflect.Field;
 
+@Mob
 class MobCyclicDependenciesContextValidator implements ContextValidator {
     @Override
-    public <T> void validate( Class<?> classToValidate, Class<T> baseMobClass) {
+    public <T> void validate(Class<?> classToValidate, Class<T> baseMobClass) {
         Class<?> currentClass = classToValidate;
         while (!currentClass.equals(Object.class)) {
             Field[] fields = currentClass.getDeclaredFields();

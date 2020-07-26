@@ -15,13 +15,14 @@ import java.util.Set;
 
 class ObjectFactory {
     private final ApplicationContext context;
-    private final List<Config> configs;
+    private Config mobConfig;
+
     private final List<ObjectConfigurator> configurators = new ArrayList<>();
     private final List<ProxyObjectConfigurator> proxyConfigurators = new ArrayList<>();
 
     public ObjectFactory(ApplicationContext context) {
         this.context = context;
-        this.configs = context.getConfigs();
+        this.mobConfig = context.getMobConfig();
     }
 
     public void initObjectFactory() {
@@ -32,37 +33,33 @@ class ObjectFactory {
     private void loadObjectConfigurators() {
         final Class<CoreConfigurator> annotation = CoreConfigurator.class;
 
-        for (Config config : configs) {
-            Set<Class<? extends ObjectConfigurator>> implsSet = config.getScanner().getSubTypesOf(ObjectConfigurator.class);
-            implsSet.stream().filter(impl -> impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                try {
-                    configurators.add(impl.getDeclaredConstructor().newInstance());
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            });
-            implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                configurators.add(context.getObject(impl));
-            });
-        }
+        Set<Class<? extends ObjectConfigurator>> implsSet = mobConfig.getScanner().getSubTypesOf(ObjectConfigurator.class);
+        implsSet.stream().filter(impl -> impl.isAnnotationPresent(annotation)).forEach(impl -> {
+            try {
+                configurators.add(impl.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        });
+        implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
+            configurators.add(context.getObject(impl));
+        });
     }
 
     private void loadProxyObjectConfigurators() {
         final Class<CoreConfigurator> annotation = CoreConfigurator.class;
 
-        for (Config config : configs) {
-            Set<Class<? extends ProxyObjectConfigurator>> implsSet = config.getScanner().getSubTypesOf(ProxyObjectConfigurator.class);
-            implsSet.stream().filter(impl -> impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                try {
-                    proxyConfigurators.add(impl.getDeclaredConstructor().newInstance());
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            });
-            implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
-                proxyConfigurators.add(context.getObject(impl));
-            });
-        }
+        Set<Class<? extends ProxyObjectConfigurator>> implsSet = mobConfig.getScanner().getSubTypesOf(ProxyObjectConfigurator.class);
+        implsSet.stream().filter(impl -> impl.isAnnotationPresent(annotation)).forEach(impl -> {
+            try {
+                proxyConfigurators.add(impl.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        });
+        implsSet.stream().filter(impl -> !impl.isAnnotationPresent(annotation)).forEach(impl -> {
+            proxyConfigurators.add(context.getObject(impl));
+        });
     }
 
     public <T> T createObject(Class<T> implClass) {

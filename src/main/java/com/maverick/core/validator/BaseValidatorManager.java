@@ -6,21 +6,20 @@ import com.maverick.core.context.ApplicationContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class BaseValidatorManager implements ValidatorManager {
-    private List<Config> configs;
+    private final Config mobConfig;
     private final List<ContextValidator> VALIDATORS = new ArrayList<>();
 
     public BaseValidatorManager(ApplicationContext context) {
-        this.configs = context.getConfigs();
+        this.mobConfig = context.getMobConfig();
         scanForValidators();
     }
 
     @Override
-    public void validate(ApplicationContext context, List<Class<?>> mobs) {
+    public void validate(ApplicationContext context, Set<Class<?>> mobs) {
         for (ContextValidator validator : VALIDATORS) {
             for (Class<?> mob : mobs) {
                 validator.validate(mob, mob);
@@ -28,12 +27,9 @@ public class BaseValidatorManager implements ValidatorManager {
         }
     }
 
-    public void scanForValidators() {
-        Set<Class<? extends ContextValidator>> resultSet = new HashSet<>();
-        for (Config config : this.configs) {
-            Set<Class<? extends ContextValidator>> subTypesOf = config.getScanner().getSubTypesOf(ContextValidator.class);
-            resultSet.addAll(subTypesOf);
-        }
+    private void scanForValidators() {
+        Set<Class<? extends ContextValidator>> resultSet =
+                mobConfig.getScanner().getSubTypesOf(ContextValidator.class);
 
         for (Class<? extends ContextValidator> aClass : resultSet) {
             if (!Modifier.isAbstract(aClass.getModifiers())) {

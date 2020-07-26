@@ -1,6 +1,7 @@
 package com.maverick.core.config;
 
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -23,6 +24,7 @@ public class PathScannerConfig implements Config {
     }
 
     @Override
+    @Nullable
     public <T> Class<? extends T> getImplementation(Class<T> type) {
         Set<Class<? extends T>> impls = scanner.getSubTypesOf(type);
         if (impls.size() > 1) {
