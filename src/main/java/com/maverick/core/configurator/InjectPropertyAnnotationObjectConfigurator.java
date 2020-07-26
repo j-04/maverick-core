@@ -2,6 +2,7 @@ package com.maverick.core.configurator;
 
 import com.maverick.core.api.annotation.CoreConfigurator;
 import com.maverick.core.api.annotation.InjectProperty;
+import com.maverick.core.api.annotation.Mob;
 import com.maverick.core.api.configurator.ObjectConfigurator;
 import com.maverick.core.api.context.IApplicationContext;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Mob
 @CoreConfigurator
 public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigurator {
     private final Map<String, String> properties;
@@ -37,7 +39,7 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
             if (lines != null)
                 this.properties = lines
                         .map(String::strip)
-                        .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!]*)$"))
+                        .filter(line -> line.matches("^([a-zA-Z0-9]* *= *[\\w\\-()!_ ]*)$"))
                         .map(line -> line.split(" *= *"))
                         .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
             else
@@ -53,7 +55,7 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
         Objects.requireNonNull(context);
 
         Class<?> oClass = o.getClass();
-        while (!oClass.getSuperclass().equals(Object.class)) {
+        while (!oClass.equals(Object.class)) {
             for (Field field : oClass.getDeclaredFields()) {
                 if (field.isAnnotationPresent(InjectProperty.class)) {
                     InjectProperty p = field.getAnnotation(InjectProperty.class);

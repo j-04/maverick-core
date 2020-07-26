@@ -1,11 +1,16 @@
 package com.maverick.core.context;
 
 import com.maverick.core.api.annotation.Lazy;
+import com.maverick.core.api.annotation.Mob;
 import com.maverick.core.api.annotation.Singleton;
-import com.maverick.core.config.Config;
-import com.maverick.core.config.JavaConfig;
 import com.maverick.core.api.context.IApplicationContext;
+import com.maverick.core.config.Config;
+import com.maverick.core.config.MobScannerConfig;
+import com.maverick.core.exception.MobTypeIsNotDeclaredException;
+import com.maverick.core.validator.BaseValidatorManager;
+import com.maverick.core.validator.ValidatorManager;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -13,39 +18,69 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext implements IApplicationContext {
     private ObjectFactory objectFactory;
+
+    private final List<Config> CONFIGS;
     @Getter
-    private final List<Config> configs;
+    private Config mobConfig;
+
     private final Map<Class<?>, Object> SINGLETON_CACHE = new ConcurrentHashMap<>();
-    private final ConfigManager configManager = new ConfigManagerImpl();
+    private final ConfigManager configManager = new BaseConfigManager();
+    private ValidatorManager validatorManager;
+
+    private final Set<Class<?>> MOB_CLASSES = new HashSet<>();
 
     public ApplicationContext() {
         this("");
     }
 
     public ApplicationContext(List<Config> customConfigs) {
-        this.configs = configManager.setUpConfigList(customConfigs);
+        this.CONFIGS = configManager.setUpConfigList(customConfigs);
     }
 
     public ApplicationContext(String... packagesToScan) {
-        this.configs = configManager.setUpConfigList(packagesToScan);
+        this.CONFIGS = configManager.setUpConfigList(packagesToScan);
     }
 
+    public void initContext() {
+        scanMobObjects();
+        initializeMobScannerConfig();
+        objectFactory = new ObjectFactory(this);
+        validatorManager = new BaseValidatorManager(this);
+        validateMobObjects();
+        objectFactory.initObjectFactory();
+        initEagerSingletons(mobConfig);
+    }
+
+    private void scanMobObjects() {
+        for (Config config : CONFIGS) {
+            Set<Class<?>> typesAnnotatedWith = config.getScanner().getTypesAnnotatedWith(Mob.class);
+            MOB_CLASSES.addAll(typesAnnotatedWith);
+        }
+    }
+
+    private void validateMobObjects() {
+        validatorManager.validate(this, this.MOB_CLASSES);
+    }
+
+    private void initializeMobScannerConfig() {
+        this.mobConfig = new MobScannerConfig(this.MOB_CLASSES);
+    }
+
+    @NotNull
     public <T> T getObject(Class<T> type) {
+        if (type == null)
+            throw new NullPointerException("The null reference of type is not allowed!");
+
         Class<? extends T> implClass = type;
 
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-            for (Config config : configs) {
-                implClass = config.getImplementation(type);
-                if (implClass != null)
-                    break;
+            implClass = mobConfig.getImplementation(type);
+            if (implClass == null) {
+                throw new MobTypeIsNotDeclaredException("Can not find mob implementation of " + type);
             }
-
-            implClass = configs.stream().map(config -> {
-                Class<? extends T> impl = config.getImplementation(type);
-                return impl;
-            }).filter(Objects::nonNull).findFirst().orElse(null);
-
-            Objects.requireNonNull(implClass, "Can not find implementation of interface " + type);
+        } else {
+            if (!MOB_CLASSES.contains(type))
+                throw new MobTypeIsNotDeclaredException(String.format("Mob with type %s is not declared!", type.getName()));
         }
 
         T object = objectFactory.createObject(implClass);
@@ -55,12 +90,6 @@ public class ApplicationContext implements IApplicationContext {
         else
             SINGLETON_CACHE.put(implClass, object);
         return object;
-    }
-
-    public void initContext() {
-        objectFactory = new ObjectFactory(this);
-        objectFactory.initObjectFactory();
-        configs.forEach(this::initEagerSingletons);
     }
 
     private void initEagerSingletons(Config config) {
