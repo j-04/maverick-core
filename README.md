@@ -1,4 +1,4 @@
-# Self realization of IoC and DI concepts  
+# Self implementation of IoC and DI concepts  
 
 ## Author
 * Dragosh Sergey - [j-04](https://github.com/j-04)
